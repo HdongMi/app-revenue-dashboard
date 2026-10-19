@@ -163,7 +163,15 @@ function buildData(infoRows, admobRows, adsRows){
       x.rev+=num(r[c.rev]); x.req+=num(r[c.req]); x.matched+=num(r[c.matched]); x.imp+=num(r[c.imp]); x.clicks+=num(r[c.clicks]);
     });
   }
-  // Google Ads: 앱 이름 열과 정확히 같거나, 캠페인 이름에 앱 이름이 포함되면 그 앱으로 묶어요
+  // Google Ads: "APP) 소상공인" → 앞의 "APP)"를 떼고, 남은 키워드("소상공인")가
+  // AdMob 앱 이름("소상공인 지원사업 - ...")에 들어 있으면 그 앱의 ads 열로 붙여요.
+  // 어떤 앱과도 맞지 않는 Ads 행은 별도 표로 만들지 않고 버려요.
+  const keyOf=s=>String(s||"").replace(/^\s*app\s*\)\s*/i,"").trim();
+  const matchApp=raw=>{
+    const k=norm(keyOf(raw)); if(!k) return null;
+    const hits=apps.filter(a=>{const n=norm(a); return n===k||n.includes(k)||k.includes(n);});
+    return hits.sort((a,b)=>b.length-a.length)[0]||null;
+  };
   if(adsRows.length>1){
     const h=adsRows[0], body=adsRows.slice(1);
     const c={date:findDateCol(h,body), app:col(h,"앱","app","캠페인","campaign"),
@@ -171,10 +179,8 @@ function buildData(infoRows, admobRows, adsRows){
     if(c.cost>=0 && norm(h[c.cost]).includes("전환당")) c.cost=h.findIndex((x,j)=>norm(x).includes("비용")&&!norm(x).includes("전환당"));
     body.forEach(r=>{
       const d=toDate(r[c.date]); if(!d) return;
-      const raw=(r[c.app]||"").trim();
-      const app=apps.find(a=>a===raw) || apps.slice().sort((a,b)=>b.length-a.length).find(a=>raw.includes(a)) || raw;
+      const app=matchApp(r[c.app]);
       if(!app) return;
-      if(!apps.includes(app)) apps.push(app);
       const x=cell(app,d); x.conv+=num(r[c.conv]); x.cost+=num(r[c.cost]); x.hasAds=true;
     });
   }
