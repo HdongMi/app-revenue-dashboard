@@ -19,7 +19,7 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
-.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:20px}
+.wrap{max-width:1760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:20px}
 .num{font-variant-numeric:tabular-nums}
 
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:4px 4px 0}
@@ -43,8 +43,8 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .up{color:var(--plus)} .down{color:var(--minus)} .zero{color:var(--sub)}
 .body{margin-top:16px}
 .app.closed .body{display:none}
-th.memo-h,td.memo-cell{text-align:left;min-width:260px}
-.memo-in{width:100%;min-width:240px;height:32px;font:inherit;font-size:13px;color:var(--fg);background:transparent;border:1px solid transparent;border-radius:8px;padding:0 8px}
+th.memo-h,td.memo-cell{min-width:180px}
+.memo-in{width:100%;min-width:0;text-align:center;height:32px;font:inherit;font-size:13px;color:var(--fg);background:transparent;border:1px solid transparent;border-radius:8px;padding:0 8px}
 .memo-in::placeholder{color:var(--muted);opacity:.6}
 .memo-in:hover{background:var(--bg)}
 .memo-in:focus{outline:none;background:var(--surface);border-color:var(--accent)}
@@ -56,13 +56,13 @@ th.memo-h,td.memo-cell{text-align:left;min-width:260px}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .table-scroll{overflow:auto;max-height:calc(41px + 15 * 45px + 52px);border:1px solid var(--line);border-radius:16px}
-table{border-collapse:separate;border-spacing:0;width:100%;min-width:1460px;font-size:14px}
-th{font-size:12px;font-weight:600;color:var(--muted);text-align:right;padding:12px 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;height:41px}
-th:first-child,td:first-child{text-align:left;padding-left:16px;position:sticky;left:0;background:var(--surface);z-index:1}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:0;font-size:13px}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:center;padding:12px 6px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;height:41px}
+th:first-child,td:first-child{text-align:center;padding-left:12px;position:sticky;left:0;background:var(--surface);z-index:1}
 th:first-child{z-index:3}
 th:last-child,td:last-child{padding-right:16px}
 th.ads{color:var(--accent)}
-td{text-align:right;padding:0 10px;height:45px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--sub)}
+td{text-align:center;padding:0 6px;height:45px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--sub)}
 td:first-child{color:var(--fg);font-weight:600}
 td:first-child .wd{font-weight:600;margin-left:4px}
 td:first-child .wd.sat{color:var(--sat)}
@@ -77,6 +77,33 @@ tfoot td:first-child{background:var(--total);z-index:3}
 .state b{color:var(--minus)}
 .foot{font-size:12px;color:var(--muted);padding:0 4px;line-height:1.6}
 
+[hidden]{display:none!important}
+.tabs{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:14px;width:fit-content}
+.tabs button{border:0;font:inherit;font-size:14px;font-weight:700;padding:10px 20px;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.sum{padding:20px 0;display:flex;flex-direction:column;gap:20px}
+.sum-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;background:var(--chip);padding:4px;border-radius:12px}
+.wchip{border:0;font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer}
+.wchip[aria-pressed="true"]{background:var(--accent);color:#fff}
+.wnav{display:flex;align-items:center;gap:12px;font-size:18px}
+.wnav button{border:0;background:var(--chip);color:var(--sub);width:36px;height:36px;border-radius:10px;font:inherit;cursor:pointer}
+.wnav button:disabled{opacity:.35;cursor:default}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:var(--bg);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.kpi span{color:var(--muted);font-size:13px;font-weight:600}
+.kpi b{font-size:22px;font-weight:800;letter-spacing:-0.02em}
+.kpi em{font-style:normal;font-size:12px;font-weight:600;color:var(--muted)}
+.kpi em.up{color:var(--plus)} .kpi em.down{color:var(--minus)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:12px}
+.chart{background:var(--bg);border-radius:16px;padding:16px 18px}
+.chart h3{margin:0 0 8px;font-size:15px}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:4px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.arow{display:grid;grid-template-columns:minmax(80px,240px) 1fr 130px;gap:12px;align-items:center;padding:6px 0}
+.track{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:6px}
+.arow b{text-align:right}
 @media (max-width:760px){
   .board{padding:4px 20px;border-radius:20px}
   .app + .app{margin:0 -20px;padding-left:20px;padding-right:20px}
@@ -86,6 +113,7 @@ tfoot td:first-child{background:var(--total);z-index:3}
 </head>
 <body>
 <div class="wrap">
+  <div class="tabs" role="group" aria-label="보기 전환"><button data-view="dash" aria-pressed="true">대시보드</button><button data-view="sum" aria-pressed="false">주간 요약</button></div>
   <header>
     <div>
       <h1>앱 수익 대시보드</h1>
@@ -95,6 +123,7 @@ tfoot td:first-child{background:var(--total);z-index:3}
   </header>
 
   <div class="board" id="board"><div class="state">시트에서 데이터를 불러오고 있어요…</div></div>
+  <div class="board" id="summary" hidden></div>
 
   <p class="foot">순수익 = 예상 수입(USD) × 고정 환율 − ads 사용비용(KRW). 플러스는 빨간색, 마이너스는 파란색으로 표시돼요. 기록이 없는 날짜는 0으로 채워서 보여줘요. 합계 행의 eCPM·일치율·노출률·CTR·전환단가는 합계 기준으로 다시 계산한 값이에요.</p>
 </div>
@@ -240,7 +269,7 @@ function fillMonth(rows, month, lastDay){
 
 let DB, sel={}, closed={};
 const memoKey=(app,date)=>`memo|${app}|${date}`;
-const memoCell=(ai,app,date)=>`<input class="memo-in" data-a="${ai}" data-d="${date}" value="${esc(store.get(memoKey(app,date))||"")}" placeholder="특이사항" aria-label="${date} 메모">`;
+const memoCell=(ai,app,date)=>`<input class="memo-in" data-a="${ai}" data-d="${date}" value="${esc(store.get(memoKey(app,date))||"")}" aria-label="${date} 메모">`;
 
 function iconHtml(app){
   const u=DB.icons[app], fb=`<div class="icon fb">${esc(app[0]||"?")}</div>`;
@@ -266,6 +295,7 @@ function render(){
     const n=t.rev*FX-t.cost;
 
     const btns=allMonths.length?`<div class="months" role="group" aria-label="${esc(app)} 월 선택">${allMonths.map(m=>`<button class="month" data-app="${ai}" data-m="${m}" aria-pressed="${m===month}">${label(m)}</button>`).join("")}</div>`:"";
+    
     const netHtml=rows.length?`<div class="net num"><span>${label(month)} 순수익</span><b class="${cls(n)}">${won(n)}</b></div>`:"";
     const content=rows.length
       ? `<div class="table-scroll"><table class="num">${HEAD}<tbody>${rows.map(x=>row(dateLabel(x.date),x,showAds,memoCell(ai,app,x.date))).join("")}</tbody><tfoot>${row("합계",t,showAds)}</tfoot></table></div>`
@@ -286,6 +316,75 @@ function render(){
   B(".memo-in").forEach(t=>t.oninput=()=>store.set(memoKey(DB.apps[+t.dataset.a],t.dataset.d),t.value));
 }
 
+/* ===== 주간 요약 (월~일) ===== */
+let VIEW="dash", wk=null, wApp="all";
+const dstr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parts=s=>s.split("-").map(Number);
+const addDays=(s,n)=>{const [y,m,d]=parts(s);return dstr(new Date(y,m-1,d+n))};
+const mondayOf=s=>{const [y,m,d]=parts(s);const t=new Date(y,m-1,d);return dstr(new Date(y,m-1,d-((t.getDay()+6)%7)))};
+const short=n=>{const a=Math.abs(n),s=n<0?"−":"";return a>=10000?s+(a/10000).toFixed(1)+"만":s+int(a)};
+function weekAgg(start,app){
+  const apps=app==="all"?DB.apps:[app];
+  return Array.from({length:7},(_,i)=>{
+    const date=addDays(start,i), x=zero(date);
+    apps.forEach(a=>{const r=DB.data[a].find(r=>r.date===date); if(r) ["rev","req","matched","imp","clicks","conv","cost"].forEach(k=>x[k]+=r[k]);});
+    x.krw=x.rev*FX; x.profit=x.krw-x.cost; return x;
+  });
+}
+function bars(days,series,fmt){
+  const W=720,H=260,L=8,R=8,T=28,Bm=34,ph=H-T-Bm,n=days.length,gw=(W-L-R)/n;
+  const vals=days.flatMap(d=>series.map(s=>d[s.key]));
+  const mx=Math.max(0,...vals), mn=Math.min(0,...vals), rng=(mx-mn)||1;
+  const y=v=>T+(mx-v)/rng*ph, y0=y(0), bw=Math.min(40,gw*0.75/series.length);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img"><line x1="${L}" x2="${W-R}" y1="${y0}" y2="${y0}" stroke="var(--line)"/>`;
+  days.forEach((d,i)=>{
+    const [yy,mm,dd]=parts(d.date), w=new Date(yy,mm-1,dd).getDay(), cx=L+gw*i+gw/2;
+    series.forEach((se,j)=>{
+      const v=d[se.key], bx=cx-bw*series.length/2+bw*j, py=y(v), h=Math.abs(py-y0);
+      const fill=se.color||(v>=0?"var(--plus)":"var(--minus)");
+      s+=`<rect x="${bx+1}" y="${Math.min(py,y0)}" width="${bw-2}" height="${v?Math.max(h,1):0}" rx="4" fill="${fill}"/>`;
+      if(series.length===1) s+=`<text x="${bx+bw/2}" y="${v>=0?py-6:py+14}" text-anchor="middle" font-size="11" fill="var(--sub)">${fmt(v)}</text>`;
+    });
+    s+=`<text x="${cx}" y="${H-12}" text-anchor="middle" font-size="12" font-weight="600" fill="${w===6?"var(--sat)":w===0?"var(--sun)":"var(--fg)"}">${DAYS[w]} ${dd}</text>`;
+  });
+  return s+"</svg>";
+}
+function renderSummary(){
+  const all=DB.apps.flatMap(a=>DB.data[a].map(x=>x.date)).sort();
+  if(!all.length){$("summary").innerHTML='<div class="state">데이터가 없어요.</div>';return;}
+  const first=mondayOf(all[0]), lastW=mondayOf(all[all.length-1]);
+  if(!wk||wk>lastW) wk=lastW; if(wk<first) wk=first;
+  const days=weekAgg(wk,wApp), prev=weekAgg(addDays(wk,-7),wApp);
+  const T=a=>({krw:sum(a,"krw"),cost:sum(a,"cost"),profit:sum(a,"profit"),imp:sum(a,"imp"),clicks:sum(a,"clicks")});
+  const t=T(days), p=T(prev);
+  const card=(l,txt,k,tone,neutral)=>{
+    const dl=p[k]?((t[k]-p[k])/Math.abs(p[k])*100):null;
+    return `<div class="kpi"><span>${l}</span><b class="${tone}">${txt}</b><em class="${dl==null||neutral?"":cls(dl)}">${dl==null?"지난주 데이터 없음":"지난주 대비 "+(dl>0?"+":"")+dl.toFixed(1)+"%"}</em></div>`;
+  };
+  const fmtD=s=>s.slice(5).replace("-","/");
+  const chips=["전체",...DB.apps].map((a,i)=>{const nm=a.length>12?a.slice(0,12)+"…":a; const on=i===0?wApp==="all":DB.apps[i-1]===wApp; return `<button class="wchip" data-wi="${i-1}" aria-pressed="${on}">${esc(nm)}</button>`}).join("");
+  let list="";
+  if(wApp==="all"){
+    const rs=DB.apps.map(a=>({a,p:T(weekAgg(wk,a)).profit})), mx=Math.max(1,...rs.map(r=>Math.abs(r.p)));
+    list=`<div class="chart"><h3>앱별 주간 순수익</h3>${rs.map(r=>`<div class="arow"><span>${esc(r.a)}</span><div class="track"><i style="width:${Math.abs(r.p)/mx*100}%;background:${r.p>=0?"var(--plus)":"var(--minus)"}"></i></div><b class="num ${cls(r.p)}">${won(r.p)}</b></div>`).join("")}</div>`;
+  }
+  $("summary").innerHTML=`<div class="sum">
+    <div class="sum-top"><div class="wnav"><button data-w="-1" aria-label="이전 주" ${wk<=first?"disabled":""}>◀</button><b class="num">${fmtD(wk)} ~ ${fmtD(addDays(wk,6))} (월~일)</b><button data-w="1" aria-label="다음 주" ${wk>=lastW?"disabled":""}>▶</button></div><div class="chips">${chips}</div></div>
+    <div class="kpis num">${card("주간 순수익",won(t.profit),"profit",cls(t.profit))}${card("수입(원화 환산)",won(t.krw),"krw","")}${card("ads 사용비용",won(t.cost),"cost","",true)}${card("노출수",int(t.imp),"imp","")}</div>
+    <div class="charts">
+      <div class="chart"><h3>일별 순수익</h3>${bars(days,[{key:"profit"}],short)}</div>
+      <div class="chart"><h3>일별 수입 vs ads 비용</h3><div class="legend"><span><i style="background:var(--accent)"></i>수입</span><span><i style="background:var(--muted)"></i>ads 비용</span></div>${bars(days,[{key:"krw",color:"var(--accent)"},{key:"cost",color:"var(--muted)"}],short)}</div>
+    </div>${list}</div>`;
+  document.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{wk=addDays(wk,7*+b.dataset.w);renderSummary()});
+  document.querySelectorAll("[data-wi]").forEach(b=>b.onclick=()=>{wApp=+b.dataset.wi<0?"all":DB.apps[+b.dataset.wi];renderSummary()});
+}
+function show(){
+  $("board").hidden=VIEW!=="dash"; $("summary").hidden=VIEW!=="sum";
+  document.querySelectorAll("[data-view]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===VIEW));
+  if(VIEW==="sum"&&DB) renderSummary();
+}
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{VIEW=b.dataset.view;show()});
+
 async function load(){
   $("fx").textContent=`환율 1달러 = ${FX.toLocaleString("ko-KR")}원`;
   try{
@@ -294,7 +393,7 @@ async function load(){
     DB=buildData(info,admob,ads);
     const last=DB.apps.flatMap(a=>DB.data[a].map(x=>x.date)).sort().pop();
     if(last) $("updated").textContent=`마지막 데이터 ${last} · 매일 01:00 업데이트`;
-    render();
+    render(); show();
   }catch(e){
     $("board").innerHTML=`<div class="state"><b>시트를 불러오지 못했어요.</b><br>구글 시트의 '웹에 게시'가 켜져 있는지 확인하고 새로고침해 주세요.</div>`;
   }
