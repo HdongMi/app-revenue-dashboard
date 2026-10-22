@@ -41,15 +41,13 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .net{font-size:13px;font-weight:600}
 .net span{font-weight:500;color:var(--muted);margin-right:6px}
 .up{color:var(--plus)} .down{color:var(--minus)} .zero{color:var(--sub)}
-.memo-btn{border:0;font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer}
-.memo-btn[aria-pressed="true"]{background:var(--accent);color:#fff}
-.memo-btn.has::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--plus);margin-left:6px;vertical-align:middle}
 .body{margin-top:16px}
 .app.closed .body{display:none}
-.memo{margin-bottom:16px}
-.memo textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:14px;line-height:1.6;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.memo textarea:focus{outline:2px solid var(--accent);outline-offset:0}
-.memo small{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+th.memo-h,td.memo-cell{text-align:left;min-width:260px}
+.memo-in{width:100%;min-width:240px;height:32px;font:inherit;font-size:13px;color:var(--fg);background:transparent;border:1px solid transparent;border-radius:8px;padding:0 8px}
+.memo-in::placeholder{color:var(--muted);opacity:.6}
+.memo-in:hover{background:var(--bg)}
+.memo-in:focus{outline:none;background:var(--surface);border-color:var(--accent)}
 
 .months{display:flex;gap:6px;flex-wrap:wrap;background:var(--chip);padding:4px;border-radius:12px;margin-bottom:16px;width:fit-content;max-width:100%}
 .month{border:0;font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
@@ -58,7 +56,7 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .table-scroll{overflow:auto;max-height:calc(41px + 15 * 45px + 52px);border:1px solid var(--line);border-radius:16px}
-table{border-collapse:separate;border-spacing:0;width:100%;min-width:1180px;font-size:14px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:1460px;font-size:14px}
 th{font-size:12px;font-weight:600;color:var(--muted);text-align:right;padding:12px 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;height:41px}
 th:first-child,td:first-child{text-align:left;padding-left:16px;position:sticky;left:0;background:var(--surface);z-index:1}
 th:first-child{z-index:3}
@@ -218,12 +216,12 @@ function dateLabel(d){
   const [y,m,dd]=d.split("-").map(Number), w=new Date(y,m-1,dd).getDay();
   return `${d}<span class="wd ${w===6?"sat":w===0?"sun":""}">(${DAYS[w]})</span>`;
 }
-const HEAD=`<thead><tr><th>일</th><th>예상 수입(USD)</th><th>eCPM(USD)</th><th>요청수</th><th>일치율</th><th>일치 요청</th><th>노출률</th><th>노출수</th><th>클릭률(CTR)</th><th>클릭수</th><th class="ads">ads 전환수</th><th class="ads">ads 전환단가</th><th class="ads">ads 사용비용</th><th>순수익</th></tr></thead>`;
-function row(label,x,showAds){
+const HEAD=`<thead><tr><th>일</th><th>예상 수입(USD)</th><th>eCPM(USD)</th><th>요청수</th><th>일치율</th><th>일치 요청</th><th>노출률</th><th>노출수</th><th>클릭률(CTR)</th><th>클릭수</th><th class="ads">ads 전환수</th><th class="ads">ads 전환단가</th><th class="ads">ads 사용비용</th><th>순수익</th><th class="memo-h">메모</th></tr></thead>`;
+function row(label,x,showAds,memo=""){
   const v=x.rev*FX-x.cost, ecpm=x.imp?x.rev/x.imp*1000:0;
   return `<tr><td>${label}</td><td>${usd(x.rev)}</td><td>${usd(ecpm)}</td><td>${int(x.req)}</td><td>${pct(x.matched,x.req)}</td><td>${int(x.matched)}</td><td>${pct(x.imp,x.matched)}</td><td>${int(x.imp)}</td><td>${pct(x.clicks,x.imp)}</td><td>${int(x.clicks)}</td>`
    + (showAds?`<td>${int(x.conv)}</td><td>${won(x.conv?x.cost/x.conv:0)}</td><td>${won(x.cost)}</td>`:`<td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>`)
-   + `<td class="profit ${cls(v)}">${won(v)}</td></tr>`;
+   + `<td class="profit ${cls(v)}">${won(v)}</td><td class="memo-cell">${memo}</td></tr>`;
 }
 const monthKey=d=>d.slice(0,7);
 const monthLabel=k=>`${+k.slice(5)}월`;
@@ -240,9 +238,9 @@ function fillMonth(rows, month, lastDay){
   return out;
 }
 
-let DB, sel={}, closed={}, memoOpen={};
-const memoKey=(app,m)=>`memo|${app}|${m}`;
-const hasMemo=(app,m)=>!!(store.get(memoKey(app,m))||"").trim();
+let DB, sel={}, closed={};
+const memoKey=(app,date)=>`memo|${app}|${date}`;
+const memoCell=(ai,app,date)=>`<input class="memo-in" data-a="${ai}" data-d="${date}" value="${esc(store.get(memoKey(app,date))||"")}" placeholder="특이사항" aria-label="${date} 메모">`;
 
 function iconHtml(app){
   const u=DB.icons[app], fb=`<div class="icon fb">${esc(app[0]||"?")}</div>`;
@@ -268,29 +266,24 @@ function render(){
     const n=t.rev*FX-t.cost;
 
     const btns=allMonths.length?`<div class="months" role="group" aria-label="${esc(app)} 월 선택">${allMonths.map(m=>`<button class="month" data-app="${ai}" data-m="${m}" aria-pressed="${m===month}">${label(m)}</button>`).join("")}</div>`:"";
-    const memoPanel=memoOpen[app]?`<div class="memo"><textarea data-memo="${ai}" placeholder="${label(month)} 메모를 남겨보세요 (자동 저장)">${esc(store.get(memoKey(app,month))||"")}</textarea><small>메모는 이 브라우저에 앱·월별로 자동 저장돼요.</small></div>`:"";
     const netHtml=rows.length?`<div class="net num"><span>${label(month)} 순수익</span><b class="${cls(n)}">${won(n)}</b></div>`:"";
     const content=rows.length
-      ? `<div class="table-scroll"><table class="num">${HEAD}<tbody>${rows.map(x=>row(dateLabel(x.date),x,showAds)).join("")}</tbody><tfoot>${row("합계",t,showAds)}</tfoot></table></div>`
+      ? `<div class="table-scroll"><table class="num">${HEAD}<tbody>${rows.map(x=>row(dateLabel(x.date),x,showAds,memoCell(ai,app,x.date))).join("")}</tbody><tfoot>${row("합계",t,showAds)}</tfoot></table></div>`
       : `<div class="none">${month?label(month):""} 데이터가 아직 없어요</div>`;
 
     return `<section class="app${isClosed?" closed":""}">
       <div class="app-head">
         <button class="toggle" data-toggle="${ai}" aria-expanded="${!isClosed}" aria-label="${esc(app)} 접기/펼치기">${iconHtml(app)}<h2>${esc(app)}</h2><span class="chev">▾</span></button>
-        <div class="right">${netHtml}<button class="memo-btn${hasMemo(app,month)?" has":""}" data-memobtn="${ai}" aria-pressed="${!!memoOpen[app]}">메모</button></div>
+        <div class="right">${netHtml}</div>
       </div>
-      <div class="body">${btns}${memoPanel}${content}</div>
+      <div class="body">${btns}${content}</div>
     </section>`;
   }).join("") || `<div class="state">표시할 앱 데이터가 없어요.</div>`;
 
   const B=document.querySelectorAll.bind(document);
   B(".month").forEach(b=>b.onclick=()=>{sel[DB.apps[+b.dataset.app]]=b.dataset.m;render()});
   B("[data-toggle]").forEach(b=>b.onclick=()=>{const a=DB.apps[+b.dataset.toggle]; closed[a]=!closed[a]; store.set("closed|"+a,closed[a]?"1":"0"); render()});
-  B("[data-memobtn]").forEach(b=>b.onclick=()=>{const a=DB.apps[+b.dataset.memobtn]; memoOpen[a]=!memoOpen[a]; render(); if(memoOpen[a]) document.querySelector(`[data-memo="${b.dataset.memobtn}"]`)?.focus()});
-  B("[data-memo]").forEach(t=>t.oninput=()=>{
-    const a=DB.apps[+t.dataset.memo]; store.set(memoKey(a,sel[a]),t.value);
-    document.querySelector(`[data-memobtn="${t.dataset.memo}"]`).classList.toggle("has",!!t.value.trim());
-  });
+  B(".memo-in").forEach(t=>t.oninput=()=>store.set(memoKey(DB.apps[+t.dataset.a],t.dataset.d),t.value));
 }
 
 async function load(){
