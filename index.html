@@ -7,16 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
 <style>
-/* ===== 설정 ===== */
 :root{
   --bg:#F2F4F6; --surface:#FFFFFF; --fg:#191F28; --sub:#4E5968; --muted:#8B95A1; --line:#E5E8EB; --total:#F9FAFB;
-  --accent:#3182F6; --accent-soft:#E8F3FF; --plus:#3182F6; --minus:#F04452; --chip:#F2F4F6;
+  --accent:#3182F6; --accent-soft:#E8F3FF; --plus:#F04452; --minus:#3182F6; --sat:#3182F6; --sun:#F04452; --chip:#F2F4F6;
   --font:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",-apple-system,system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#101013; --surface:#1C1C21; --fg:#F2F4F6; --sub:#B0B8C1; --muted:#7E8792; --line:#2C2C33; --total:#232329;
-  --accent:#4D96FF; --accent-soft:#16263F; --plus:#4D96FF; --minus:#FF5A67; --chip:#26262C; color-scheme:dark}}
+  --accent:#4D96FF; --accent-soft:#16263F; --plus:#FF5A67; --minus:#4D96FF; --sat:#4D96FF; --sun:#FF5A67; --chip:#26262C; color-scheme:dark}}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
@@ -29,18 +28,30 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .fx{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:999px}
 
 .board{background:var(--surface);border-radius:24px;padding:8px 24px}
-.app{padding-block:24px}
+.app{padding-block:20px}
 .app + .app{border-top:8px solid var(--bg);margin:0 -24px;padding-left:24px;padding-right:24px}
-.app-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.app-id{display:flex;align-items:center;gap:12px;min-width:0}
-.app-id h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-0.02em}
+.app-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.toggle{display:flex;align-items:center;gap:12px;min-width:0;border:0;background:none;font:inherit;color:inherit;padding:0;cursor:pointer;text-align:left}
+.toggle h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-0.02em}
+.chev{font-size:16px;color:var(--muted);transition:transform .15s;display:inline-block}
+.app.closed .chev{transform:rotate(-90deg)}
 .icon{width:44px;height:44px;border-radius:12px;flex:none;object-fit:cover;background:var(--chip);border:1px solid var(--line)}
 .icon.fb{display:grid;place-items:center;font-weight:700;font-size:18px;color:var(--sub)}
-.net{font-size:13px;font-weight:600;margin-top:2px}
+.right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.net{font-size:13px;font-weight:600}
 .net span{font-weight:500;color:var(--muted);margin-right:6px}
-.up{color:var(--plus)} .down{color:var(--minus)}
+.up{color:var(--plus)} .down{color:var(--minus)} .zero{color:var(--sub)}
+.memo-btn{border:0;font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer}
+.memo-btn[aria-pressed="true"]{background:var(--accent);color:#fff}
+.memo-btn.has::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--plus);margin-left:6px;vertical-align:middle}
+.body{margin-top:16px}
+.app.closed .body{display:none}
+.memo{margin-bottom:16px}
+.memo textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:14px;line-height:1.6;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.memo textarea:focus{outline:2px solid var(--accent);outline-offset:0}
+.memo small{display:block;color:var(--muted);font-size:12px;margin-top:6px}
 
-.months{display:flex;gap:6px;flex-wrap:wrap;background:var(--chip);padding:4px;border-radius:12px}
+.months{display:flex;gap:6px;flex-wrap:wrap;background:var(--chip);padding:4px;border-radius:12px;margin-bottom:16px;width:fit-content;max-width:100%}
 .month{border:0;font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
 .month:hover{color:var(--fg)}
 .month[aria-pressed="true"]{background:var(--accent);color:#fff}
@@ -55,6 +66,9 @@ th:last-child,td:last-child{padding-right:16px}
 th.ads{color:var(--accent)}
 td{text-align:right;padding:0 10px;height:45px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--sub)}
 td:first-child{color:var(--fg);font-weight:600}
+td:first-child .wd{font-weight:600;margin-left:4px}
+td:first-child .wd.sat{color:var(--sat)}
+td:first-child .wd.sun{color:var(--sun)}
 td.empty{color:var(--muted);opacity:.5}
 td.profit{font-weight:700}
 tbody tr:hover td{background:var(--bg)}
@@ -84,17 +98,23 @@ tfoot td:first-child{background:var(--total);z-index:3}
 
   <div class="board" id="board"><div class="state">시트에서 데이터를 불러오고 있어요…</div></div>
 
-  <p class="foot">순수익 = 예상 수입(USD) × 고정 환율 − ads 사용비용(KRW). 합계 행의 eCPM·일치율·노출률·CTR·전환단가는 합계 기준으로 다시 계산한 값이에요.</p>
+  <p class="foot">순수익 = 예상 수입(USD) × 고정 환율 − ads 사용비용(KRW). 플러스는 빨간색, 마이너스는 파란색으로 표시돼요. 기록이 없는 날짜는 0으로 채워서 보여줘요. 합계 행의 eCPM·일치율·노출률·CTR·전환단가는 합계 기준으로 다시 계산한 값이에요.</p>
 </div>
 
 <script>
-/* ===== 설정: 여기만 바꾸면 돼요 ===== */
 const FX = 1350; // 고정 환율 (원/달러)
 const BASE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeUYwQxCbX2dlzIxKY0vZUzVVkHkGvbwqeDWmjBFugSeGr9hiy9PWuM6wmfyeUgvxQPnON4g1QKTqB/pub";
 const SHEETS = {
   info:  BASE + "?gid=1219947467&single=true&output=csv",
   admob: BASE + "?gid=935774785&single=true&output=csv",
   ads:   BASE + "?gid=1855278682&single=true&output=csv",
+};
+
+/* ===== 저장 (메모·접힘 상태) ===== */
+const mem={};
+const store={
+  get(k){ try{ const v=localStorage.getItem(k); if(v!==null) return v; }catch(e){} return mem[k]??null; },
+  set(k,v){ mem[k]=v; try{ localStorage.setItem(k,v); }catch(e){} }
 };
 
 /* ===== CSV 파싱 ===== */
@@ -112,7 +132,6 @@ function parseCSV(text){
   return rows.filter(r=>r.some(v=>v.trim()!==""));
 }
 const norm=s=>String(s||"").replace(/\s+/g,"").toLowerCase();
-// 헤더 이름으로 열 찾기 (후보 키워드 중 하나라도 포함하면 매칭)
 function col(header, ...keys){
   const h=header.map(norm);
   for(const k of keys){ const i=h.findIndex(x=>x===norm(k)); if(i>=0) return i; }
@@ -135,7 +154,6 @@ function findDateCol(header, rows){
 /* ===== 데이터 합치기 ===== */
 function buildData(infoRows, admobRows, adsRows){
   const apps=[], icons={};
-  // 앱정보: 앱 이름 + 아이콘 URL
   if(infoRows.length>1){
     const h=infoRows[0];
     let ni=col(h,"앱 이름","앱이름","앱","app name","app","name");
@@ -151,7 +169,6 @@ function buildData(infoRows, admobRows, adsRows){
   const byApp={};
   const cell=(app,date)=>{ byApp[app]??={}; return byApp[app][date]??={rev:0,req:0,matched:0,imp:0,clicks:0,conv:0,cost:0,hasAds:false}; };
 
-  // AdMob
   if(admobRows.length>1){
     const h=admobRows[0], body=admobRows.slice(1);
     const c={date:findDateCol(h,body), app:col(h,"앱","app"), rev:col(h,"예상 수입","수입","earnings","revenue"),
@@ -163,9 +180,6 @@ function buildData(infoRows, admobRows, adsRows){
       x.rev+=num(r[c.rev]); x.req+=num(r[c.req]); x.matched+=num(r[c.matched]); x.imp+=num(r[c.imp]); x.clicks+=num(r[c.clicks]);
     });
   }
-  // Google Ads: "APP) 소상공인" → 앞의 "APP)"를 떼고, 남은 키워드("소상공인")가
-  // AdMob 앱 이름("소상공인 지원사업 - ...")에 들어 있으면 그 앱의 ads 열로 붙여요.
-  // 어떤 앱과도 맞지 않는 Ads 행은 별도 표로 만들지 않고 버려요.
   const keyOf=s=>String(s||"").replace(/^\s*app\s*\)\s*/i,"").trim();
   const matchApp=raw=>{
     const k=norm(keyOf(raw)); if(!k) return null;
@@ -191,25 +205,45 @@ function buildData(infoRows, admobRows, adsRows){
 
 /* ===== 화면 ===== */
 const $=id=>document.getElementById(id);
-const won=n=>(n<0?"−₩":"₩")+Math.abs(Math.round(n)).toLocaleString("ko-KR");
+const won=n=>(Math.round(n)<0?"−₩":"₩")+Math.abs(Math.round(n)).toLocaleString("ko-KR");
 const usd=n=>n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct=(a,b)=>b?(a/b*100).toFixed(2)+"%":"0.00%";
 const int=n=>Math.round(n).toLocaleString("ko-KR");
 const sum=(a,k)=>a.reduce((s,x)=>s+x[k],0);
-const cls=v=>v>=0?"up":"down";
+const cls=v=>Math.round(v)>0?"up":Math.round(v)<0?"down":"zero";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DAYS=["일","월","화","수","목","금","토"];
 
+function dateLabel(d){
+  const [y,m,dd]=d.split("-").map(Number), w=new Date(y,m-1,dd).getDay();
+  return `${d}<span class="wd ${w===6?"sat":w===0?"sun":""}">(${DAYS[w]})</span>`;
+}
 const HEAD=`<thead><tr><th>일</th><th>예상 수입(USD)</th><th>eCPM(USD)</th><th>요청수</th><th>일치율</th><th>일치 요청</th><th>노출률</th><th>노출수</th><th>클릭률(CTR)</th><th>클릭수</th><th class="ads">ads 전환수</th><th class="ads">ads 전환단가</th><th class="ads">ads 사용비용</th><th>순수익</th></tr></thead>`;
-function row(label,x){
-  const v=x.rev*FX-x.cost, ecpm=x.imp?x.rev/x.imp*1000:0, ads=x.hasAds||x.conv||x.cost;
+function row(label,x,showAds){
+  const v=x.rev*FX-x.cost, ecpm=x.imp?x.rev/x.imp*1000:0;
   return `<tr><td>${label}</td><td>${usd(x.rev)}</td><td>${usd(ecpm)}</td><td>${int(x.req)}</td><td>${pct(x.matched,x.req)}</td><td>${int(x.matched)}</td><td>${pct(x.imp,x.matched)}</td><td>${int(x.imp)}</td><td>${pct(x.clicks,x.imp)}</td><td>${int(x.clicks)}</td>`
-   + (ads?`<td>${int(x.conv)}</td><td>${x.conv?won(x.cost/x.conv):"—"}</td><td>${won(x.cost)}</td>`:`<td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>`)
+   + (showAds?`<td>${int(x.conv)}</td><td>${won(x.conv?x.cost/x.conv:0)}</td><td>${won(x.cost)}</td>`:`<td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>`)
    + `<td class="profit ${cls(v)}">${won(v)}</td></tr>`;
 }
 const monthKey=d=>d.slice(0,7);
 const monthLabel=k=>`${+k.slice(5)}월`;
+const zero=date=>({date,rev:0,req:0,matched:0,imp:0,clicks:0,conv:0,cost:0,hasAds:false});
 
-let DB, sel={};
+// 해당 월의 1일 ~ 마지막 데이터 날짜까지 빈 날짜를 0으로 채움
+function fillMonth(rows, month, lastDay){
+  const map=Object.fromEntries(rows.map(x=>[x.date,x]));
+  const out=[];
+  for(let d=1; d<=lastDay; d++){
+    const date=`${month}-${String(d).padStart(2,"0")}`;
+    out.push(map[date]||zero(date));
+  }
+  return out;
+}
+
+let DB, sel={}, closed={}, memoOpen={};
+const memoKey=(app,m)=>`memo|${app}|${m}`;
+const hasMemo=(app,m)=>!!(store.get(memoKey(app,m))||"").trim();
+
 function iconHtml(app){
   const u=DB.icons[app], fb=`<div class="icon fb">${esc(app[0]||"?")}</div>`;
   return u?`<img class="icon" src="${esc(u)}" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.fb" data-fb="${esc(fb)}">`:fb;
@@ -218,24 +252,45 @@ function render(){
   const allMonths=[...new Set(DB.apps.flatMap(a=>DB.data[a].map(x=>monthKey(x.date))))].sort();
   const multiYear=new Set(allMonths.map(k=>k.slice(0,4))).size>1;
   const label=k=>multiYear?`${k.slice(2,4)}년 ${monthLabel(k)}`:monthLabel(k);
+  const lastDay={};
+  DB.apps.forEach(a=>DB.data[a].forEach(x=>{ const m=monthKey(x.date), d=+x.date.slice(8); if(!lastDay[m]||d>lastDay[m]) lastDay[m]=d; }));
+
   $("board").innerHTML=DB.apps.map((app,ai)=>{
     const own=[...new Set(DB.data[app].map(x=>monthKey(x.date)))];
     const month=sel[app] ?? (own.length?own[own.length-1]:allMonths[allMonths.length-1]);
     sel[app]=month;
-    const btns=allMonths.length?`<div class="months" role="group" aria-label="${esc(app)} 월 선택">${allMonths.map(m=>`<button class="month" data-app="${ai}" data-m="${m}" aria-pressed="${m===month}">${label(m)}</button>`).join("")}</div>`:"";
-    const rows=DB.data[app].filter(x=>monthKey(x.date)===month);
-    const id=`<div class="app-id">${iconHtml(app)}<div><h2>${esc(app)}</h2>`;
-    if(!rows.length) return `<section class="app"><div class="app-head">${id}</div></div>${btns}</div><div class="none">${month?label(month):""} 데이터가 아직 없어요</div></section>`;
-    const t={rev:sum(rows,"rev"),req:sum(rows,"req"),matched:sum(rows,"matched"),imp:sum(rows,"imp"),clicks:sum(rows,"clicks"),conv:sum(rows,"conv"),cost:sum(rows,"cost"),hasAds:rows.some(x=>x.hasAds)};
+    if(closed[app]===undefined) closed[app]=store.get("closed|"+app)==="1";
+    const isClosed=closed[app];
+    const real=DB.data[app].filter(x=>monthKey(x.date)===month);
+    const rows=real.length?fillMonth(real,month,lastDay[month]):[];
+    const showAds=rows.some(x=>x.hasAds);
+    const t={rev:sum(rows,"rev"),req:sum(rows,"req"),matched:sum(rows,"matched"),imp:sum(rows,"imp"),clicks:sum(rows,"clicks"),conv:sum(rows,"conv"),cost:sum(rows,"cost")};
     const n=t.rev*FX-t.cost;
-    return `<section class="app">
-      <div class="app-head">${id}<div class="net num"><span>${label(month)} 순수익</span><b class="${cls(n)}">${won(n)}</b></div></div></div>${btns}</div>
-      <div class="table-scroll"><table class="num">${HEAD}
-        <tbody>${rows.map(x=>row(x.date,x)).join("")}</tbody>
-        <tfoot>${row("합계",t)}</tfoot>
-      </table></div></section>`;
+
+    const btns=allMonths.length?`<div class="months" role="group" aria-label="${esc(app)} 월 선택">${allMonths.map(m=>`<button class="month" data-app="${ai}" data-m="${m}" aria-pressed="${m===month}">${label(m)}</button>`).join("")}</div>`:"";
+    const memoPanel=memoOpen[app]?`<div class="memo"><textarea data-memo="${ai}" placeholder="${label(month)} 메모를 남겨보세요 (자동 저장)">${esc(store.get(memoKey(app,month))||"")}</textarea><small>메모는 이 브라우저에 앱·월별로 자동 저장돼요.</small></div>`:"";
+    const netHtml=rows.length?`<div class="net num"><span>${label(month)} 순수익</span><b class="${cls(n)}">${won(n)}</b></div>`:"";
+    const content=rows.length
+      ? `<div class="table-scroll"><table class="num">${HEAD}<tbody>${rows.map(x=>row(dateLabel(x.date),x,showAds)).join("")}</tbody><tfoot>${row("합계",t,showAds)}</tfoot></table></div>`
+      : `<div class="none">${month?label(month):""} 데이터가 아직 없어요</div>`;
+
+    return `<section class="app${isClosed?" closed":""}">
+      <div class="app-head">
+        <button class="toggle" data-toggle="${ai}" aria-expanded="${!isClosed}" aria-label="${esc(app)} 접기/펼치기">${iconHtml(app)}<h2>${esc(app)}</h2><span class="chev">▾</span></button>
+        <div class="right">${netHtml}<button class="memo-btn${hasMemo(app,month)?" has":""}" data-memobtn="${ai}" aria-pressed="${!!memoOpen[app]}">메모</button></div>
+      </div>
+      <div class="body">${btns}${memoPanel}${content}</div>
+    </section>`;
   }).join("") || `<div class="state">표시할 앱 데이터가 없어요.</div>`;
-  document.querySelectorAll(".month").forEach(b=>b.onclick=()=>{sel[DB.apps[+b.dataset.app]]=b.dataset.m;render()});
+
+  const B=document.querySelectorAll.bind(document);
+  B(".month").forEach(b=>b.onclick=()=>{sel[DB.apps[+b.dataset.app]]=b.dataset.m;render()});
+  B("[data-toggle]").forEach(b=>b.onclick=()=>{const a=DB.apps[+b.dataset.toggle]; closed[a]=!closed[a]; store.set("closed|"+a,closed[a]?"1":"0"); render()});
+  B("[data-memobtn]").forEach(b=>b.onclick=()=>{const a=DB.apps[+b.dataset.memobtn]; memoOpen[a]=!memoOpen[a]; render(); if(memoOpen[a]) document.querySelector(`[data-memo="${b.dataset.memobtn}"]`)?.focus()});
+  B("[data-memo]").forEach(t=>t.oninput=()=>{
+    const a=DB.apps[+t.dataset.memo]; store.set(memoKey(a,sel[a]),t.value);
+    document.querySelector(`[data-memobtn="${t.dataset.memo}"]`).classList.toggle("has",!!t.value.trim());
+  });
 }
 
 async function load(){
